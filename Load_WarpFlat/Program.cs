@@ -30,7 +30,7 @@ namespace Load_WarpFlat
                 var bs = cell.ToBsonDocument();
                 spdatas.Add(bs);
             }
-            var client = new MongoClient("mongodb://cel-sql:27018");
+            var client = new MongoClient("mongodb://localhost:27017");
             var database = client.GetDatabase("Demo");
             database.DropCollection("spdata");
             var collection = database.GetCollection<BsonDocument>("spdata");

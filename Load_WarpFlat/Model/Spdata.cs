@@ -6,6 +6,9 @@ namespace Load_WarpFlat.Model
 
     public class CellInfo
     {
+
+        public BsonObjectId _id { get; set; }
+
         /*0-0*/     public string delflag { get; set; }
         /*1-1*/     public string languagecode { get; set; } /* LIKE SCREEn DRIVER FORCE VISITATIONS */
         /*2-6*/     public string menu { get; set; }

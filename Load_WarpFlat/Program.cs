@@ -14,7 +14,83 @@ namespace Load_WarpFlat
     {
         static void Main(string[] args)
         {
-            LoadSpdata();
+            //LoadSpdata();
+            GetMenu();        
+        }
+        private static void GetMenu()
+        {
+            var client = new MongoClient("mongodb://localhost:27017");
+            var database = client.GetDatabase("Demo");
+            var collection = database.GetCollection<CellInfo>("spdata").AsQueryable();
+            var query = from s in collection
+                        select s;
+            var menuRecords = collection
+                .Where(c => (c.lit.StartsWith("+F1") || c.lit.StartsWith("+T1")) && (c.hmenucode.Equals("1") || c.hmenucode.Equals("2") || c.hmenucode.Equals("3")))
+                .OrderBy(c => c.hmenucode)
+                .ThenBy(c => c.menu)
+                .ToList();
+
+
+            var t = menuRecords.Where(c => c.menu.StartsWith("CI5") && c.hmenucode.Equals("3")).ToList();
+            List<Menu> menus = new List<Menu>();
+            foreach (var menuRecord in menuRecords.Where(c => c.hmenucode.Equals("1")))
+            {
+                Menu menu = new Menu
+                {
+                    Code = menuRecord.menu,
+                    Title = menuRecord.lit.Substring(3)
+                };
+                if (menuRecord.lit.Substring(0,3).Equals("+F1"))
+                {
+                    var subMenuRecords = menuRecords.Where(s => s.menu.StartsWith(menu.Code.Substring(0, 2)) && s.hmenucode.Equals("2"));
+                    if (subMenuRecords.Count() > 0)
+                    {
+                        menu.Children = new List<Menu>();
+                        foreach (var subMenuRecord in subMenuRecords)
+                        {
+                            var subMenu = new Menu
+                            {
+                                Code = subMenuRecord.menu,
+                                Title = subMenuRecord.lit.Substring(3)
+                            };
+                            if (subMenuRecord.lit.Substring(0, 3).Equals("+F1"))
+                            {
+   
+                                var subSubMenuRecords = menuRecords.Where(s => s.menu.StartsWith(subMenu.Code.Substring(0, 3)) && s.hmenucode.Equals("3"));
+                                if (subSubMenuRecords.Count() > 0)
+                                {
+                                    subMenu.Children = new List<Menu>();
+                                    foreach (var subSubMenuRecord in subSubMenuRecords)
+                                    {
+                                        var subSubMenu = new Menu
+                                        {
+                                            Code = subSubMenuRecord.menu,
+                                            Title = subSubMenuRecord.lit.Substring(3)
+                                        };
+                                        if (subSubMenuRecord.lit.Substring(0, 3).Equals("+T1"))
+                                        {
+                                            subSubMenu.Script = subSubMenuRecord.selcalcstr.Trim('"');
+                                        }
+                                        subMenu.Children.Add(subSubMenu);
+                                    }
+                                }
+
+                            }
+                            else if (subMenuRecord.lit.Substring(0, 3).Equals("+T1"))
+                            {
+                                subMenu.Script = subMenuRecord.selcalcstr.Trim('"');
+                            }
+                            menu.Children.Add(subMenu);
+                        }
+                    }
+
+                }
+                else if (menuRecord.lit.Substring(0, 3).Equals("+T1"))
+                {
+                    menu.Script = menuRecord.selcalcstr.Trim('"');
+                }
+                menus.Add(menu);
+            }
         }
         private static void LoadSpdata()
         {

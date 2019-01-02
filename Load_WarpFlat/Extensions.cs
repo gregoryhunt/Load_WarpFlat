@@ -27,7 +27,8 @@ namespace Load_WarpFlat
         public static string BytesToString(this byte[] source)
         {
             var value = new string(source.Select(b => (char)b).ToArray());
-            return Regex.Replace(value, @"[^\u0020-\u007E]", string.Empty).Trim();
+            // \u000D \u000A
+            return Regex.Replace(value, @"[^\u0020-\u007E|\u000D|\u000A]", string.Empty).TrimEnd();
         }
         public static BsonDocument UnflattedObject(byte[] row, List<SpdataMapItem> spdataMap)
         {

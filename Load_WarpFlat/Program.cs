@@ -14,8 +14,8 @@ namespace Load_WarpFlat
     {
         static void Main(string[] args)
         {
-            //LoadSpdata();
-            GetMenu();        
+            LoadSpdata();
+            //GetMenu();        
         }
         private static void GetMenu()
         {
@@ -101,7 +101,6 @@ namespace Load_WarpFlat
             {
                 byte[] row = spdata.Slice(i, 512);
                 char[] line = row.Select(b => (char)b).ToArray();
-
                 CellInfo cell = new CellInfo(row);
                 var bs = cell.ToBsonDocument();
                 spdatas.Add(bs);

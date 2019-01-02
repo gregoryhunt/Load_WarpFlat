@@ -7,7 +7,7 @@ namespace Load_WarpFlat.Model
     public class CellInfo
     {
 
-        public BsonObjectId _id { get; set; }
+        //public BsonObjectId _id { get; set; }
 
         /*0-0*/     public string delflag { get; set; }
         /*1-1*/     public string languagecode { get; set; } /* LIKE SCREEn DRIVER FORCE VISITATIONS */
@@ -112,6 +112,7 @@ namespace Load_WarpFlat.Model
 
         public CellInfo(byte[] row)
         {
+            
             delflag = row.Slice(0, 1).BytesToString();
             languagecode = row.Slice(1, 1).BytesToString();
             menu = row.Slice(2, 5).BytesToString();
